@@ -1,27 +1,14 @@
-from langchain_community.document_loaders import WebBaseLoader
+# --- database.py ---
+from langchain_community.document_loaders import PyPDFLoader
 
-urls = [
-    # GDPR & HR
-    "https://gdpr-info.eu/",
-    "https://www.nhs.uk/your-nhs-data/",
-    "https://qualitysolicitors.com/hr-compliance-checklist",
-    "https://micin.com/insights/hr-compliance-checklist",
-    "https://www.shrm.org/resourcesandtools/tools-and-samples/hr-qa/pages/compliance.aspx",
-    "https://www.adp.com/resources/articles-and-insights/articles/h/hr-compliance-basics.aspx",
-    # Contract Law
-    "https://www.legalzoom.com/articles/contract-law-basics",
-    "https://www.contractscounsel.com/b/contract-compliance",
-    # General Compliance
-    "https://www.osha.gov/laws-regs",
-    "https://www.ftc.gov/business-guidance/privacy-security",
-    "https://www.iso.org/iso-standards.html",
-    # AI/Tech Regulation
-    "https://artificialintelligenceact.eu/",
-    "https://www.oecd.ai/en/ai-principles",
-]
+def load_compliance_data(pdf_path="complaince_data.pdf"):
+    """
+    Loads the compliance PDF and returns a combined text string.
+    """
+    loader = PyPDFLoader(pdf_path)
+    docs = loader.load()
+    print(f"Loaded {len(docs)} pages from {pdf_path}")
 
-loader = WebBaseLoader(urls)
-docs = loader.load()
+    context_text = "\n\n".join([doc.page_content for doc in docs])
 
-print(f"Loaded {len(docs)} documents")
-print(docs[0].page_content[:1000])
+    return context_text

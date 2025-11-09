@@ -1,4 +1,4 @@
-# --- database.py ---
+#database.py
 from langchain_community.document_loaders import PyPDFLoader
 
 def load_compliance_data(pdf_path="complaince_data.pdf"):

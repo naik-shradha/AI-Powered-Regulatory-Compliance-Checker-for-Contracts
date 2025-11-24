@@ -1,45 +1,31 @@
-#app.py
-from groq import Groq
-from dotenv import load_dotenv
-import os
-from database import load_compliance_data 
+from database import load_compliance_data
+from clause_extractor import extract_clauses
+from risk_assessor import assess_risk
+from rag_module import rag_answer
 
-#Step 1: Load compliance document
-context_text = load_compliance_data("complaince_data.pdf")
+def main():
+    print("COMPLIANCE INTELLIGENCE SYSTEM\n")
+    baseline = load_compliance_data("complaince_data.txt")
 
-#Step 2: Initialize Groq client
-load_dotenv()
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+    contract_file = input("Enter contract file (e.g., contract.txt): ").strip()
+    if not contract_file:
+        print("No file provided.")
+        return
+    with open(contract_file, encoding="utf-8") as f:
+        contract_text = f.read()
 
-#Step 3: Ask user question
-user_question = input("\nAsk your question: ")
+    print("\nExtracting key clauses...\n")
+    clauses = extract_clauses(contract_text)
+    print(clauses)
 
-#Step 4: Query Groq model (strictly grounded in document)
-chat_completion = client.chat.completions.create(
-    model="llama-3.3-70b-versatile",
-    messages=[
-        {
-            "role": "system",
-            "content": (
-                "You are a legal and compliance expert assistant. "
-                "Use only the company compliance document for context. "
-                "Do not use any external laws or knowledge. "
-                "If the answer is not found, say 'Not specified in the document.'"
-            )
-        },
-        {
-            "role": "user",
-            "content": (
-                f"Context:\n{context_text}\n\n"
-                f"Question:\n{user_question}\n\n"
-                "Answer strictly using the text above."
-            )
-        }
-    ],
-    max_tokens=512,
-    temperature=0.5,
-)
+    print("\nRunning risk assessment...\n")
+    risk = assess_risk(clauses, baseline)
+    print(risk)
 
-#Step 5: Display the model's answer
-print("\n Model Answer:\n")
-print(chat_completion.choices[0].message.content)
+    q = input("\nAsk a compliance question (or press Enter to skip):").strip()
+    if q:
+        print("\nRAG Answer:\n")
+        print(rag_answer(q))
+
+if __name__ == "__main__":
+    main()

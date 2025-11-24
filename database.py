@@ -1,14 +1,17 @@
-#database.py
-from langchain_community.document_loaders import PyPDFLoader
+from pathlib import Path
+from pypdf import PdfReader
 
-def load_compliance_data(pdf_path="complaince_data.pdf"):
-    """
-    Loads the compliance PDF and returns a combined text string.
-    """
-    loader = PyPDFLoader(pdf_path)
-    docs = loader.load()
-    print(f"Loaded {len(docs)} pages from {pdf_path}")
-
-    context_text = "\n\n".join([doc.page_content for doc in docs])
-
-    return context_text
+def load_compliance_data(path: str) -> str:
+    p = Path(path)
+    if not p.exists():
+        raise FileNotFoundError(f"{p} not found.")
+    if p.suffix.lower() == ".txt":
+        return p.read_text(encoding="utf-8")
+    elif p.suffix.lower() == ".pdf":
+        text = []
+        reader = PdfReader(str(p))
+        for page in reader.pages:
+            text.append(page.extract_text() or "")
+        return "\n".join(text)
+    else:
+        raise ValueError("Unsupported file type (use .txt or .pdf)")

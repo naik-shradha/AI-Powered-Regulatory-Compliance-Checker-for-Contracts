@@ -1,3 +1,12 @@
+contracts/
+data/
+my_docs/
+faiss_index/
+
+# FAISS auto-generated index
+faiss_index/
+*.index
+
 # ignore virtual envs
 myenv/
 .venv/

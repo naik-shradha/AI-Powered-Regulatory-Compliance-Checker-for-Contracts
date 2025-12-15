@@ -1,11 +1,11 @@
-contracts/
-data/
-my_docs/
-faiss_index/
+# contracts/
+# data/
+# my_docs/
+# faiss_index/
 
 # FAISS auto-generated index
-faiss_index/
-*.index
+# faiss_index/
+# *.index
 
 # ignore virtual envs
 myenv/
